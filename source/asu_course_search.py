@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import Set, Union, Optional
+from typing import Set, Union, Optional, Dict, Tuple
 from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.common.by import By
 from source.util import move_and_click
 from source.util import wait_load
 
@@ -42,30 +44,40 @@ class AbstractControl(ABC):
         pass
 
 
-class InPersonOrOnline(AbstractControl):
+# Models a radio-group control element defined by the options argument
+class RadioGroup(AbstractControl):
 
-    def __init__(self, driver: WebDriver):
+    # options is used to add radios to the set upon creation. Example Below:
+    # options = {
+    #   'open': (By.ID, 'searchTypeOpen'),
+    #   'all': (By.ID, 'searchTypeAllClass')
+    # }
+    def __init__(self, driver: WebDriver, options: Dict[str, Tuple[str, str]]):
         super().__init__(driver)
 
-        # Connect to radio elements on page
-        radio_person = self.driver.find_element_by_id('radio-campus')
-        radio_online = self.driver.find_element_by_id('radio-online')
+        # Pull valid option set from options dict
+        self.valid_options = set(options.keys())
 
-        # Hardcoded options as this is a simple radio set
-        self.valid_options = {'person', 'online'}
+        # Create mapper for valid option to according radio element
+        self.option_to_radio: Dict[str, WebElement] = {}
+        for option in self.valid_options:
+            radio_element = self.driver.find_element(*options[option])
+            self.option_to_radio[option] = radio_element
 
-        # Option mapping
-        self.option_to_radio = {
-            'person': radio_person,
-            'online': radio_online
-        }
-
-    # Return hardcoded option set
+    # Return valid options for radio set
     def checker(self) -> Set[str]:
         return self.valid_options
 
-    # Set option if not already set
+    # Set option to value
     def setter(self, value: str) -> None:
+
+        # If value is invalid, warn and state valid options
+        if value not in self.valid_options:
+            print('Could not pick radio named [' + value + '].')
+            print('Valid options are: ' + str(self.valid_options))
+            return
+
+        # If value is valid and selection must change, change it
         if self.getter() != value:
             radio_element = self.option_to_radio[value]
             move_and_click(self.driver, radio_element)
@@ -73,15 +85,36 @@ class InPersonOrOnline(AbstractControl):
 
     # Return name of selected radio, or None if neither are selected
     def getter(self) -> Optional[str]:
-        person = self.option_to_radio['person'].get_attribute('checked')
-        online = self.option_to_radio['online'].get_attribute('checked')
-        if person:
-            return 'person'
-        else:
-            if online:
-                return 'online'
-            else:
-                return None
+
+        # Go through radios and return the name of the checked radio
+        for option in self.valid_options:
+            if self.option_to_radio[option].get_attribute('checked'):
+                return option
+
+        # If no radio was checked, return None
+        return None
+
+
+class InPersonOrOnline(RadioGroup):
+
+    def __init__(self, driver: WebDriver):
+
+        options = {
+            'person': (By.ID, 'radio-campus'),
+            'online': (By.ID, 'radio-online')
+        }
+        super().__init__(driver, options)
+
+
+class OpenOrAll(RadioGroup):
+
+    def __init__(self, driver: WebDriver):
+
+        options = {
+            'open': (By.ID, 'searchTypeOpen'),
+            'all': (By.ID, 'searchTypeAllClass')
+        }
+        super().__init__(driver, options)
 
 
 class Term(AbstractControl):
@@ -105,45 +138,3 @@ class Session(AbstractControl):
 
 class Location(AbstractControl):
     pass
-
-
-class OpenOrAll(AbstractControl):
-
-    def __init__(self, driver: WebDriver):
-        super().__init__(driver)
-
-        # Connect to radio elements on page
-        radio_open = self.driver.find_element_by_id('searchTypeOpen')
-        radio_all = self.driver.find_element_by_id('searchTypeAllClass')
-
-        # Hardcoded options as this is a simple radio set
-        self.valid_options = {'open', 'all'}
-
-        # Option mapping
-        self.option_to_radio = {
-            'open': radio_open,
-            'all': radio_all
-        }
-
-    # Return hardcoded option set
-    def checker(self) -> Set[str]:
-        return self.valid_options
-
-    # Set option if not already set
-    def setter(self, value: str) -> None:
-        if self.getter() != value:
-            radio_element = self.option_to_radio[value]
-            move_and_click(self.driver, radio_element)
-            wait_load(self.driver)
-
-    # Return name of selected radio, or None if neither are selected
-    def getter(self) -> Optional[str]:
-        open_ = self.option_to_radio['open'].get_attribute('checked')
-        all_ = self.option_to_radio['all'].get_attribute('checked')
-        if open_:
-            return 'open'
-        else:
-            if all_:
-                return 'all'
-            else:
-                return None

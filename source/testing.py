@@ -1,5 +1,4 @@
 from selenium import webdriver
-from source.asu_course_search import OpenOrAll
 import time
 
 # Create driver, set wait, load page
@@ -7,18 +6,15 @@ driver = webdriver.Chrome('C:/ChromeDriver/chromedriver.exe')
 driver.implicitly_wait(10)
 driver.get('https://webapp4.asu.edu/catalog/classlist')
 
-radio = OpenOrAll(driver)
+# Testing Zone
+###############################################################################
 
-print('Valid options:', radio.checker())
+print('Hello, World!')
 
-print('Currently selected:', radio.getter())
+###############################################################################
 
-for i in range(4):
-    print('\nLoop #', i)
-    for option in radio.checker():
-        time.sleep(3)
-        print('Setting option', option)
-        radio.setter(option)
-        print('Option is now', radio.getter())
+# Allow extra time to look at page
+time.sleep(5)
 
+# Exit Selenium
 driver.quit()
