@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Set, Union, Optional
 from selenium.webdriver.chrome.webdriver import WebDriver
 from source.util import move_and_click
+from source.util import wait_load
 
 
 # Models the base required methods of a control class
@@ -68,6 +69,7 @@ class InPersonOrOnline(AbstractControl):
         if self.getter() != value:
             radio_element = self.option_to_radio[value]
             move_and_click(self.driver, radio_element)
+            wait_load(self.driver)
 
     # Return name of selected radio, or None if neither are selected
     def getter(self) -> Optional[str]:
@@ -106,4 +108,42 @@ class Location(AbstractControl):
 
 
 class OpenOrAll(AbstractControl):
-    pass
+
+    def __init__(self, driver: WebDriver):
+        super().__init__(driver)
+
+        # Connect to radio elements on page
+        radio_open = self.driver.find_element_by_id('searchTypeOpen')
+        radio_all = self.driver.find_element_by_id('searchTypeAllClass')
+
+        # Hardcoded options as this is a simple radio set
+        self.valid_options = {'open', 'all'}
+
+        # Option mapping
+        self.option_to_radio = {
+            'open': radio_open,
+            'all': radio_all
+        }
+
+    # Return hardcoded option set
+    def checker(self) -> Set[str]:
+        return self.valid_options
+
+    # Set option if not already set
+    def setter(self, value: str) -> None:
+        if self.getter() != value:
+            radio_element = self.option_to_radio[value]
+            move_and_click(self.driver, radio_element)
+            wait_load(self.driver)
+
+    # Return name of selected radio, or None if neither are selected
+    def getter(self) -> Optional[str]:
+        open_ = self.option_to_radio['open'].get_attribute('checked')
+        all_ = self.option_to_radio['all'].get_attribute('checked')
+        if open_:
+            return 'open'
+        else:
+            if all_:
+                return 'all'
+            else:
+                return None
