@@ -18,20 +18,3 @@ A Python project based upon BeautifulSoup &amp; Selenium that allows searching f
 (*this section will be populated once a full-release is created*)
 
 ---
-
-#### Branch Structuring
-(*a commit on each of these branches means*)
-
-**master:** 
-* Complete Application Releases [Via Tagging]
-* External Documentation Updates
-
-**develop:**
-* Multiple Working Features Added
-* Multiple Working Tests Added
-* Sets of Internal Documentation Added
-
-**feature:** 
-* Essentially Anything Added (*this is the active development sub-branch*)
-
----
