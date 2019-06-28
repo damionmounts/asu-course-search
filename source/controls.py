@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import Set, Union, Optional, Dict, Tuple
+from typing import Set, Union, Optional, Dict, Tuple, List
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.by import By
 from source.util import move_and_click
 from source.util import wait_load
@@ -95,7 +96,7 @@ class RadioGroup(AbstractControl):
         return None
 
 
-class InPersonOrOnline(RadioGroup):
+class RGPersonOnline(RadioGroup):
 
     def __init__(self, driver: WebDriver):
 
@@ -106,7 +107,7 @@ class InPersonOrOnline(RadioGroup):
         super().__init__(driver, options)
 
 
-class OpenOrAll(RadioGroup):
+class RGOpenAll(RadioGroup):
 
     def __init__(self, driver: WebDriver):
 
@@ -118,7 +119,39 @@ class OpenOrAll(RadioGroup):
 
 
 class Term(AbstractControl):
-    pass
+
+    def __init__(self, driver: WebDriver):
+        super().__init__(driver)
+
+        # Term drop-down menu
+        menu_element = self.driver.find_element_by_id('term')
+        self.menu = Select(menu_element)
+
+        # Get menu options and strip out previous term support
+        options: List[WebElement] = self.menu.options
+        self.valid_options = {opt.text.strip() for opt in options}
+        self.valid_options.remove('Previous terms')
+
+    # Returns string set of valid term options
+    def checker(self) -> Set[str]:
+        return self.valid_options
+
+    # Set the term to value
+    def setter(self, term: str) -> None:
+
+        # If term not valid, alert and provide valid options
+        if term not in self.valid_options:
+            print('Could not pick invalid term [' + term + '].')
+            print('Valid options are: ' + str(self.valid_options))
+            return
+
+        # If term needs to be changed, change it
+        if self.getter() != term:
+            self.menu.select_by_visible_text(term)
+
+    # Return text of current selected term
+    def getter(self) -> str:
+        return self.menu.first_selected_option.text.strip()
 
 
 class Subject(AbstractControl):

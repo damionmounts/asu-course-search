@@ -1,7 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
 from typing import Optional, Union, Set, Dict
-from source.controls import AbstractControl, InPersonOrOnline, OpenOrAll, \
+from source.controls import AbstractControl, RGPersonOnline, RGOpenAll, \
                              Term, Subject, Number, Keyword, Session, Location
 
 
@@ -18,14 +18,14 @@ class ASUCourseSearch:
 
         # Maps name of control to its instance
         self.controls: Dict[str, AbstractControl] = {
-            'PersonOnline': InPersonOrOnline(self.driver),
+            'PersonOnline': RGPersonOnline(self.driver),
             'Term': Term(self.driver),
             'Subject': Subject(self.driver),
             'Number': Number(self.driver),
             'Keyword': Keyword(self.driver),
             'Session': Session(self.driver),
             'Location': Location(self.driver),
-            'OpenAll': OpenOrAll(self.driver)
+            'OpenAll': RGOpenAll(self.driver)
         }
 
     # Quit program and close selenium instance

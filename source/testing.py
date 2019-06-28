@@ -1,4 +1,5 @@
 from selenium import webdriver
+from source.controls import Term
 import time
 
 # Create driver, set wait, load page
@@ -9,7 +10,17 @@ driver.get('https://webapp4.asu.edu/catalog/classlist')
 # Testing Zone
 ###############################################################################
 
-print('Hello, World!')
+t = Term(driver)
+print(t.checker())
+print(t.getter())
+
+
+for term in t.checker():
+    time.sleep(3)
+    print('------------------------------')
+    print('Setting term = ' + term)
+    t.setter(term)
+    print('Term = ' + t.getter())
 
 ###############################################################################
 
