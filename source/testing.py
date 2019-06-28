@@ -1,21 +1,12 @@
-from typing import Set
+from asu_course_search import ASUCourseSearch
 
-from selenium import webdriver
-from source.controls import Location
-import time
+asu = ASUCourseSearch()  # Start session
 
-# Create driver, set wait, load page
-driver = webdriver.Chrome('C:/ChromeDriver/chromedriver.exe')
-driver.implicitly_wait(10)
-driver.get('https://webapp4.asu.edu/catalog/classlist')
+controls = asu.checker()  # Get all valid control item names
 
-# Testing Zone
-###############################################################################
+# Print all valid inputs for each control item
+for control in controls:
+    options = asu.control_checker(control)
+    print(control, ":", options)
 
-###############################################################################
-
-# Allow extra time to look at page
-time.sleep(5)
-
-# Exit Selenium
-driver.quit()
+asu.quit()  # Quit session
