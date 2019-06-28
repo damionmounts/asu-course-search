@@ -303,7 +303,97 @@ class Keyword(AbstractControl):
 
 
 class Session(AbstractControl):
-    pass
+
+    def __init__(self, driver: WebDriver):
+        super().__init__(driver)
+
+        # Menu is clicked to open and close the session list
+        self.session_menu = self.driver.find_element_by_id('session-button')
+
+        # Bidirectional mapping for session names and inputs
+        self.session_to_input: Dict[str, WebElement] = {}
+        self.input_to_session: Dict[WebElement, str] = {}
+
+        # Session list is a list of list items that each contain an input/span
+        list_xpath = "//form[@id='advancedForm']/div[2]/div[2]/div[4]/div[2]/div/div/div/div/ul/li"
+        session_list = self.driver.find_elements_by_xpath(list_xpath)
+
+        # Set valid options to blank set so item can be added
+        self.valid_options = set()
+
+        # Open menu
+        move_and_click(self.driver, self.session_menu)
+
+        # Get inputs and session text, bi-map them
+        for session in session_list:
+            input_ = session.find_element_by_tag_name('input')
+            span_item = session.find_element_by_tag_name('span')
+            text = span_item.text.strip()
+
+            self.valid_options.add(text)
+            self.session_to_input[text] = input_
+            self.input_to_session[input_] = text
+
+        # Close menu
+        move_and_click(self.driver, self.session_menu)
+
+    def checker(self) -> Set[str]:
+        return self.valid_options
+
+    def setter(self, value: Set[str]) -> None:
+
+        # If any session of the selection-set is invalid, alert and return
+        invalids = value - self.valid_options
+        if len(invalids) != 0:
+            print('These sessions are invalid:', invalids)
+            print('Valid sessions are:', self.valid_options)
+            print('Nothing will be set until whole input is correct.')
+            return
+
+        # Open menu
+        move_and_click(self.driver, self.session_menu)
+
+        old = set()
+        # Run through all input items
+        inputs = set(self.input_to_session.keys())
+        for input_ in inputs:
+
+            # If an input is selected, add its text to the set
+            if input_.get_attribute('checked'):
+                old.add(self.input_to_session[input_])
+
+        # If the selection needs to be changed, change it
+        if old != value:
+            changed = old.symmetric_difference(value)
+            for change in changed:
+                input_ = self.session_to_input[change]
+                move_and_click(self.driver, input_)
+                wait_load(self.driver)
+
+        # Close menu
+        move_and_click(self.driver, self.session_menu)
+
+    def getter(self) -> Set[str]:
+
+        # Start with empty string set
+        current_selection: Set[str] = set()
+
+        # Open menu
+        move_and_click(self.driver, self.session_menu)
+
+        # Run through all input items
+        inputs = set(self.input_to_session.keys())
+        for input_ in inputs:
+
+            # If an input is selected, add its text to the set
+            if input_.get_attribute('checked'):
+                current_selection.add(self.input_to_session[input_])
+
+        # Close menu
+        move_and_click(self.driver, self.session_menu)
+
+        # Return selection
+        return current_selection
 
 
 # Visually hidden when person/online = 'online'
