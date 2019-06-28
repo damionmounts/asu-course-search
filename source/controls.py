@@ -302,76 +302,71 @@ class Keyword(AbstractControl):
         return self.entry.get_attribute('value')
 
 
-class Session(AbstractControl):
+# Models a multi-selection drop-down list that is a button and a ul
+class SplitMultiSelection(AbstractControl):
 
-    def __init__(self, driver: WebDriver):
+    # button and dropdown are locator tuples of the components
+    # Example: button = (By.ID, 'session-button')
+    def __init__(self, driver: WebDriver, button_loc: Tuple[str, str],
+                 dropdown_loc: Tuple[str, str]):
         super().__init__(driver)
 
-        # Menu is clicked to open and close the session list
-        self.session_menu = self.driver.find_element_by_id('session-button')
+        # Find button and dropdown elements
+        self.button = self.driver.find_element(*button_loc)
+        self.dropdown = self.driver.find_elements(*dropdown_loc)
 
-        # Bidirectional mapping for session names and inputs
-        self.session_to_input: Dict[str, WebElement] = {}
-        self.input_to_session: Dict[WebElement, str] = {}
-
-        # Session list is a list of list items that each contain an input/span
-        list_xpath = "//form[@id='advancedForm']/div[2]/div[2]/div[4]/div[2]/div/div/div/div/ul/li"
-        session_list = self.driver.find_elements_by_xpath(list_xpath)
-
-        # Set valid options to blank set so item can be added
+        # Set valid options to blank set so items can be added
         self.valid_options = set()
 
         # Open menu
-        move_and_click(self.driver, self.session_menu)
+        move_and_click(self.driver, self.button)
 
-        # Get inputs and session text, bi-map them
-        for session in session_list:
-            input_ = session.find_element_by_tag_name('input')
-            span_item = session.find_element_by_tag_name('span')
+        # Get text of all entries for options set
+        for item in self.dropdown:
+            span_item = item.find_element_by_tag_name('span')
             text = span_item.text.strip()
-
             self.valid_options.add(text)
-            self.session_to_input[text] = input_
-            self.input_to_session[input_] = text
 
         # Close menu
-        move_and_click(self.driver, self.session_menu)
+        move_and_click(self.driver, self.button)
 
+    # Return set of valid option strings
     def checker(self) -> Set[str]:
         return self.valid_options
 
+    # Return string set of current selections
     def setter(self, value: Set[str]) -> None:
 
-        # If any session of the selection-set is invalid, alert and return
+        # If any selection of the selection-set is invalid, alert and return
         invalids = value - self.valid_options
         if len(invalids) != 0:
-            print('These sessions are invalid:', invalids)
-            print('Valid sessions are:', self.valid_options)
-            print('Nothing will be set until whole input is correct.')
+            print('These selections are invalid:', invalids)
+            print('Valid options are:', self.valid_options)
+            print('Nothing will be set until the entire input is correct.')
             return
 
         # Open menu
-        move_and_click(self.driver, self.session_menu)
+        move_and_click(self.driver, self.button)
 
-        old = set()
-        # Run through all input items
-        inputs = set(self.input_to_session.keys())
-        for input_ in inputs:
+        # Go through options and change if necessary
+        for item in self.dropdown:
+            text = item.find_element_by_tag_name('span').text.strip()
+            input_ = item.find_element_by_tag_name('input')
 
-            # If an input is selected, add its text to the set
-            if input_.get_attribute('checked'):
-                old.add(self.input_to_session[input_])
+            # Ensure input is set
+            if text in value:
+                if not input_.get_attribute('checked'):
+                    move_and_click(self.driver, input_)
+                    wait_load(self.driver)
 
-        # If the selection needs to be changed, change it
-        if old != value:
-            changed = old.symmetric_difference(value)
-            for change in changed:
-                input_ = self.session_to_input[change]
-                move_and_click(self.driver, input_)
-                wait_load(self.driver)
+            # Ensure input is not set
+            else:
+                if input_.get_attribute('checked'):
+                    move_and_click(self.driver, input_)
+                    wait_load(self.driver)
 
         # Close menu
-        move_and_click(self.driver, self.session_menu)
+        move_and_click(self.driver, self.button)
 
     def getter(self) -> Set[str]:
 
@@ -379,23 +374,40 @@ class Session(AbstractControl):
         current_selection: Set[str] = set()
 
         # Open menu
-        move_and_click(self.driver, self.session_menu)
+        move_and_click(self.driver, self.button)
 
         # Run through all input items
-        inputs = set(self.input_to_session.keys())
-        for input_ in inputs:
-
-            # If an input is selected, add its text to the set
+        for item in self.dropdown:
+            input_ = item.find_element_by_tag_name('input')
             if input_.get_attribute('checked'):
-                current_selection.add(self.input_to_session[input_])
+                text = item.find_element_by_tag_name('span').text.strip()
+                current_selection.add(text)
 
         # Close menu
-        move_and_click(self.driver, self.session_menu)
+        move_and_click(self.driver, self.button)
 
         # Return selection
         return current_selection
 
 
+class Session(SplitMultiSelection):
+
+    def __init__(self, driver: WebDriver):
+        button = (By.ID, 'session-button')
+        dropdown = (
+            By.XPATH,
+            "//form[@id='advancedForm']/div[2]/div[2]/div[4]/div[2]/div/div/div/div/ul/li"
+        )
+        super().__init__(driver, button, dropdown)
+
+
 # Visually hidden when person/online = 'online'
-class Location(AbstractControl):
-    pass
+class Location(SplitMultiSelection):
+
+    def __init__(self, driver: WebDriver):
+        button = (By.ID, 'location-button')
+        dropdown = (
+            By.XPATH,
+            "//form[@id='advancedForm']/div[2]/div[2]/div[4]/div[3]/div/div/div/div/ul/li"
+        )
+        super().__init__(driver, button, dropdown)

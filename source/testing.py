@@ -1,5 +1,7 @@
+from typing import Set
+
 from selenium import webdriver
-from source.controls import Session
+from source.controls import Location
 import time
 
 # Create driver, set wait, load page
