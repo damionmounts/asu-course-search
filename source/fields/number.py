@@ -1,12 +1,12 @@
 from selenium.webdriver.chrome.webdriver import WebDriver
 
-from .abstract import AbstractControl
+from .abstract import AbstractField
 
 from util import is_int
 
 
 # Models number entry box control
-class Number(AbstractControl):
+class Number(AbstractField):
 
     def __init__(self, driver: WebDriver):
         super().__init__(driver)
@@ -19,7 +19,7 @@ class Number(AbstractControl):
     def setter(self, value: str) -> None:
 
         # If the value given isn't a numeric string, alert and explain
-        if not is_int(value):
+        if not (is_int(value) or value.strip() == ''):
             print('Could not set number box to [' + value + '].')
             print(self.valid_options)
             return

@@ -8,7 +8,7 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 # Models the base required methods of a control class
 #   typing here is used for documentation purposes,
 #   it is not enforceable with Python's design
-class AbstractControl(ABC):
+class AbstractField(ABC):
 
     # Input: reference(s) to shared application resources
     # Output: -
@@ -23,8 +23,8 @@ class AbstractControl(ABC):
         self.valid_options = None
 
     # Input: string or set of strings that are the choice
-    #   -str: for controls that can only hold 1 value
-    #   -Set[str]: for controls that allow multi-selection
+    #   -str: for fields that can only hold 1 value
+    #   -Set[str]: for fields that allow multi-selection
     # Output: -
     @abstractmethod
     def setter(self, value: Union[str, Set[str]]) -> None:

@@ -5,13 +5,13 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 
-from .abstract import AbstractControl
+from .abstract import AbstractField
 
 from util import move_and_click
 
 
 # Models subject entry box control
-class Subject(AbstractControl):
+class Subject(AbstractField):
 
     def __init__(self, driver: WebDriver):
         super().__init__(driver)

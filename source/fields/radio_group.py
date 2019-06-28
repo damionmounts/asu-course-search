@@ -4,13 +4,13 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
-from .abstract import AbstractControl
+from .abstract import AbstractField
 
 from util import move_and_click, wait_load
 
 
 # Models a radio-group control element defined by the options argument
-class RadioGroup(AbstractControl):
+class RadioGroup(AbstractField):
 
     # options is used to add radios to the set upon creation. Example Below:
     # options = {

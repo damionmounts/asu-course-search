@@ -1,10 +1,10 @@
 from selenium.webdriver.chrome.webdriver import WebDriver
 
-from .abstract import AbstractControl
+from .abstract import AbstractField
 
 
 # Models the keyword entry box
-class Keyword(AbstractControl):
+class Keyword(AbstractField):
 
     def __init__(self, driver: WebDriver):
         super().__init__(driver)

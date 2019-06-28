@@ -4,11 +4,11 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.select import Select
 
-from .abstract import AbstractControl
+from .abstract import AbstractField
 
 
 # Models term dropdown control
-class Term(AbstractControl):
+class Term(AbstractField):
 
     def __init__(self, driver: WebDriver):
         super().__init__(driver)

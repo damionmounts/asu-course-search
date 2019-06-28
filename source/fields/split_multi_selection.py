@@ -3,13 +3,13 @@ from typing import Tuple, Set
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 
-from .abstract import AbstractControl
+from .abstract import AbstractField
 
 from util import move_and_click, wait_load
 
 
 # Models a multi-selection drop-down list that is a button and a ul
-class SplitMultiSelection(AbstractControl):
+class SplitMultiSelection(AbstractField):
 
     # button and dropdown are locator tuples of the components
     # Example: button = (By.ID, 'session-button')
@@ -103,7 +103,7 @@ class Session(SplitMultiSelection):
 
 
 # Models location dropdown
-# Visually hidden when person/online = 'online'
+# ToDo: Address case where PersonOnline = 'online' and menu is invisible
 class Location(SplitMultiSelection):
 
     def __init__(self, driver: WebDriver):

@@ -3,56 +3,80 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 
 from typing import Optional, Union, Set, Dict
 
-from controls.keyword import Keyword
-from controls.number import Number
-from controls.split_multi_selection import Session, Location
-from controls.abstract import AbstractControl
-from controls.radio_group import PersonOnline, OpenAll
-from controls.term import Term
-from controls.subject import Subject
+from fields.keyword import Keyword
+from fields.number import Number
+from fields.split_multi_selection import Session, Location
+from fields.abstract import AbstractField
+from fields.radio_group import PersonOnline, OpenAll
+from fields.term import Term
+from fields.subject import Subject
 
 
 # Class to represent the entire asu-course-search program
+from search_results import SearchResults
+
+
 class ASUCourseSearch:
 
     def __init__(self):
 
         # Create driver, set timeout, fetch course search page
-        self.__driver: WebDriver = \
+        self.driver: WebDriver = \
             webdriver.Chrome('C:/ChromeDriver/chromedriver.exe')
-        self.__driver.implicitly_wait(10)
-        self.__driver.get('https://webapp4.asu.edu/catalog/classlist')
+        self.driver.implicitly_wait(10)
+        self.driver.get('https://webapp4.asu.edu/catalog/classlist')
 
+        # ToDo: Just make these attributes to allow simplified access
         # Maps name of control to its instance
-        self.__controls: Dict[str, AbstractControl] = {
-            'PersonOnline': PersonOnline(self.__driver),
-            'Term': Term(self.__driver),
-            'Subject': Subject(self.__driver),
-            'Number': Number(self.__driver),
-            'Keyword': Keyword(self.__driver),
-            'Session': Session(self.__driver),
-            'Location': Location(self.__driver),
-            'OpenAll': OpenAll(self.__driver)
+        self.fields: Dict[str, AbstractField] = {
+            'PersonOnline': PersonOnline(self.driver),
+            'Term': Term(self.driver),
+            'Subject': Subject(self.driver),
+            'Number': Number(self.driver),
+            'Keyword': Keyword(self.driver),
+            'Session': Session(self.driver),
+            'Location': Location(self.driver),
+            'OpenAll': OpenAll(self.driver)
         }
+
+        self.searcher = SearchResults(self.driver)
 
     # Quit program and close selenium instance
     def quit(self):
-        self.__driver.quit()
+        self.driver.quit()
 
-    # Returns the valid option names of all AbstractControls
-    def checker(self) -> Set[str]:
-        return set(self.__controls.keys())
+    # Returns the names of all AbstractFields
+    def field_names(self) -> Set[str]:
+        return set(self.fields.keys())
 
-    # Gets the valid options of the AbstractControl named control
-    def control_checker(self, control: str) -> Union[str, Set[str]]:
-        return self.__controls[control].valid_options
+    # Gets the valid options of the AbstractField named field
+    #   Returns None upon getting an invalid field name
+    def field_options(self, field: str) -> Optional[Union[str, Set[str]]]:
+        try:
+            return self.fields[field].valid_options
+        except KeyError:
+            print('[' + field + '] is not a valid field name.')
+            print('Valid field names:', self.field_names())
+            return None
 
-    # Sets the AbstractControl named control to val
-    def control_setter(self, control: str, val: Union[str, Set[str]]) -> None:
-        self.__controls[control].setter(val)
+    # Sets the AbstractField named field to value
+    def set_field(self, field: str, value: Union[str, Set[str]]) -> None:
+        try:
+            self.fields[field].setter(value)
+        except KeyError:
+            print('[' + field + '] is not a valid field name.')
+            print('Valid field names:', self.field_names())
+            return None
 
-    # Returns the current value of the AbstractControl instance named control
-    #   -Single selection controls return str or None
-    #   -Multi-section controls return Set[str] (can be empty for no-selection)
-    def control_getter(self, control: str) -> Optional[Union[str, Set[str]]]:
-        return self.__controls[control].getter()
+    # ToDo: None is a normal result from this method, employ logging or a form
+    #   of explicit error return here.
+    # Returns the current value of the AbstractField instance named field
+    #   -Single selection fields return str or None
+    #   -Multi-section fields return Set[str] (can be empty for no-selection)
+    def get_field(self, field: str) -> Optional[Union[str, Set[str]]]:
+        try:
+            return self.fields[field].getter()
+        except KeyError:
+            print('[' + field + '] is not a valid field name.')
+            print('Valid field names:', self.field_names())
+            return None
