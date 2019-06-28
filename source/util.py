@@ -15,3 +15,12 @@ def move_and_click(driver: WebDriver, element: WebElement) -> None:
 def wait_load(driver: WebDriver) -> None:
     WebDriverWait(driver, 10).until(
         EC.invisibility_of_element_located((By.ID, 'loading-alert')))
+
+
+# Checks if str is a valid int
+def is_int(string: str) -> bool:
+    try:
+        int(string)
+        return True
+    except ValueError:
+        return False

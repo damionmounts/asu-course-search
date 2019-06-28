@@ -1,5 +1,5 @@
 from selenium import webdriver
-from source.controls import Term
+from source.controls import Number
 import time
 
 # Create driver, set wait, load page
@@ -10,17 +10,18 @@ driver.get('https://webapp4.asu.edu/catalog/classlist')
 # Testing Zone
 ###############################################################################
 
-t = Term(driver)
-print(t.checker())
-print(t.getter())
+n = Number(driver)
 
+print('Valid options:', n.checker())
+print('Current value:', n.getter())
 
-for term in t.checker():
-    time.sleep(3)
-    print('------------------------------')
-    print('Setting term = ' + term)
-    t.setter(term)
-    print('Term = ' + t.getter())
+n.setter('123')
+n.setter('Yes')
+n.setter('stringy')
+print(n.getter())
+
+while True:
+    n.setter(str(int(n.getter()) + 1))
 
 ###############################################################################
 

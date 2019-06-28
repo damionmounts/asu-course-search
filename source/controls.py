@@ -6,6 +6,7 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.by import By
 from source.util import move_and_click
 from source.util import wait_load
+from source.util import is_int
 
 
 # Models the base required methods of a control class
@@ -96,6 +97,7 @@ class RadioGroup(AbstractControl):
         return None
 
 
+# Models in-person/online radio group
 class RGPersonOnline(RadioGroup):
 
     def __init__(self, driver: WebDriver):
@@ -107,6 +109,7 @@ class RGPersonOnline(RadioGroup):
         super().__init__(driver, options)
 
 
+# Models open/all radio group
 class RGOpenAll(RadioGroup):
 
     def __init__(self, driver: WebDriver):
@@ -157,8 +160,41 @@ class Term(AbstractControl):
 class Subject(AbstractControl):
     pass
 
+
+# Models number entry box control
 class Number(AbstractControl):
-    pass
+
+    def __init__(self, driver: WebDriver):
+        super().__init__(driver)
+
+        # WebElement of input box
+        self.entry = self.driver.find_element_by_id('catNbr')
+
+        # ToDo: Look into changing valid_option / verification design.
+        #   However, ensure that a consistent interface is maintained.
+        self.valid_options = {'Numeric Digit Strings Are Valid Options'}
+
+    # Return a set containing a single string explaining valid options
+    def checker(self) -> Set[str]:
+        return self.valid_options
+
+    # Set the number box to value
+    def setter(self, value: str) -> None:
+
+        # If the value given isn't a numeric string, alert and explain
+        if not is_int(value):
+            print('Could not set number box to [' + value + '].')
+            print(self.valid_options)
+            return
+
+        # If value needs to be changed, change it
+        if self.getter() != value:
+            self.entry.clear()
+            self.entry.send_keys(value)
+
+    # Return current value of the box
+    def getter(self) -> str:
+        return self.entry.get_attribute('value')
 
 
 class Keyword(AbstractControl):
@@ -169,5 +205,6 @@ class Session(AbstractControl):
     pass
 
 
+# Visually hidden when person/online = 'online'
 class Location(AbstractControl):
     pass
