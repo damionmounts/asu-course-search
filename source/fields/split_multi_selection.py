@@ -5,7 +5,7 @@ from selenium.webdriver.common.by import By
 
 from .abstract import AbstractField
 
-from util import move_and_click, wait_load
+from util import wait_load, safe_click
 
 
 # Models a multi-selection drop-down list that is a button and a ul
@@ -25,7 +25,7 @@ class SplitMultiSelection(AbstractField):
         self.valid_options = set()
 
         # Open menu
-        move_and_click(self.driver, self.button)
+        safe_click(self.driver, self.button)
 
         # Get text of all entries for options set
         for item in self.dropdown:
@@ -34,7 +34,7 @@ class SplitMultiSelection(AbstractField):
             self.valid_options.add(text)
 
         # Close menu
-        move_and_click(self.driver, self.button)
+        safe_click(self.driver, self.button)
 
     # Return string set of current selections
     def setter(self, value: Set[str]) -> None:
@@ -48,7 +48,7 @@ class SplitMultiSelection(AbstractField):
             return
 
         # Open menu
-        move_and_click(self.driver, self.button)
+        safe_click(self.driver, self.button)
 
         # Go through options and change if necessary
         for item in self.dropdown:
@@ -58,17 +58,17 @@ class SplitMultiSelection(AbstractField):
             # Ensure input is set
             if text in value:
                 if not input_.get_attribute('checked'):
-                    move_and_click(self.driver, input_)
+                    safe_click(self.driver, input_)
                     wait_load(self.driver)
 
             # Ensure input is not set
             else:
                 if input_.get_attribute('checked'):
-                    move_and_click(self.driver, input_)
+                    safe_click(self.driver, input_)
                     wait_load(self.driver)
 
         # Close menu
-        move_and_click(self.driver, self.button)
+        safe_click(self.driver, self.button)
 
     def getter(self) -> Set[str]:
 
@@ -76,7 +76,7 @@ class SplitMultiSelection(AbstractField):
         current_selection: Set[str] = set()
 
         # Open menu
-        move_and_click(self.driver, self.button)
+        safe_click(self.driver, self.button)
 
         # Run through all input items
         for item in self.dropdown:
@@ -86,7 +86,7 @@ class SplitMultiSelection(AbstractField):
                 current_selection.add(text)
 
         # Close menu
-        move_and_click(self.driver, self.button)
+        safe_click(self.driver, self.button)
 
         # Return selection
         return current_selection

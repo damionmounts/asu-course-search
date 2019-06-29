@@ -2,7 +2,7 @@ from typing import List
 
 from selenium.webdriver.chrome.webdriver import WebDriver
 
-from util import move_and_click, wait_load
+from util import safe_click, wait_load
 
 
 # ToDo: Application needs some state management and communication past just
@@ -47,7 +47,7 @@ class SearchResults:
             btn_link = btn.find_element_by_tag_name('a')
             if btn_link.get_attribute('page') == page_num:
                 found = True
-                move_and_click(self.driver, btn_link)
+                safe_click(self.driver, btn_link)
                 break
         if found:
             wait_load(self.driver)
@@ -56,7 +56,7 @@ class SearchResults:
 
     # Clicks the search button and waits on loading banner
     def search(self) -> None:
-        move_and_click(self.driver, self.search_btn)
+        safe_click(self.driver, self.search_btn)
         wait_load(self.driver)
 
 

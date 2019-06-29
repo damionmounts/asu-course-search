@@ -7,7 +7,7 @@ from selenium.webdriver.support import expected_conditions as ec
 
 from .abstract import AbstractField
 
-from util import move_and_click
+from util import safe_click
 
 
 # Models subject entry box control
@@ -27,7 +27,7 @@ class Subject(AbstractField):
 
         # Attempt to open advanced search menu and return on failure
         if not adv_search.is_displayed():
-            move_and_click(self.driver, toggle_adv_search)
+            safe_click(self.driver, toggle_adv_search)
             if not adv_search.is_displayed():
                 print("id='advanced-search' is not appearing. Could not init"
                       " valid option set for subject.")
@@ -37,7 +37,7 @@ class Subject(AbstractField):
         locator = (By.XPATH, "//div[@id='advanced-search']/div[3]/div/div/a")
         open_subject_list = WebDriverWait(self.driver, 10) \
             .until(ec.visibility_of_element_located(locator))
-        move_and_click(self.driver, open_subject_list)
+        safe_click(self.driver, open_subject_list)
 
         # Wait for visibility of full subject list
         locator = (By.ID, 'subjectList')
@@ -47,7 +47,7 @@ class Subject(AbstractField):
         # Explicitly click 'Show All' button of subject list
         xpath = "//div[@id='subjectList']/div[1]/a[24]"
         show_all = self.driver.find_element_by_xpath(xpath)
-        move_and_click(self.driver, show_all)
+        safe_click(self.driver, show_all)
 
         # Use BeautifulSoup to get the visible text of the listed subjects
         subject_list = self.driver.find_element_by_id('list')
@@ -78,7 +78,7 @@ class Subject(AbstractField):
         if self.getter() != value:
             self.entry.clear()
             self.entry.send_keys(value)
-            move_and_click(self.driver, self.header)
+            safe_click(self.driver, self.header)
 
     # Return current field value
     def getter(self) -> str:

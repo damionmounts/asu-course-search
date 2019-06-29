@@ -1,3 +1,4 @@
+from selenium.common.exceptions import ElementClickInterceptedException
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
@@ -9,6 +10,15 @@ from selenium.webdriver.common.action_chains import ActionChains
 # Move to and then click element, prevents trying to click off-screen
 def move_and_click(driver: WebDriver, element: WebElement) -> None:
     ActionChains(driver).move_to_element(element).click(element).perform()
+
+
+# Try to click, if failed, move to element then click
+def safe_click(driver: WebDriver, element: WebElement) -> None:
+    try:
+        element.click()
+    except ElementClickInterceptedException:
+        ActionChains(driver).move_to_element(element).perform()
+        element.click()
 
 
 # Wait for loading banner to disappear
@@ -24,3 +34,5 @@ def is_int(string: str) -> bool:
         return True
     except ValueError:
         return False
+
+# ElementClickInterceptedException

@@ -1,22 +1,24 @@
+from asu_course_search import ASUCourseSearch
 import time
 
-from asu_course_search import ASUCourseSearch
+start = time.time()
 
-a = ASUCourseSearch()
+s = ASUCourseSearch()
 
-# Search for all English classes
-a.set_field('Subject', 'ENG')
-a.set_field('Number', '')
-a.set_field('OpenAll', 'all')
-a.searcher.search()
+s.set_field('PersonOnline', 'person')
+s.set_field('Term', 'Fall 2019')
+s.set_field('Subject', 'ENG')
+s.set_field('OpenAll', 'all')
 
-# Get all page nums besides the first, (already on page 1)
-pages = a.searcher.get_page_numbers()
+s.searcher.search()
+pages = s.searcher.get_page_numbers()
 pages.remove(1)
 
-# Click through each page
 for page in pages:
-    a.searcher.click_page_number(str(page))
-    time.sleep(2)
+    s.searcher.click_page_number(str(page))
 
-a.quit()
+s.quit()
+
+finish = time.time()
+
+print('Whole operation took ' + str(finish - start) + 's.')

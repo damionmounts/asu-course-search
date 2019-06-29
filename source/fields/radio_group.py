@@ -6,7 +6,7 @@ from selenium.webdriver.remote.webelement import WebElement
 
 from .abstract import AbstractField
 
-from util import move_and_click, wait_load
+from util import wait_load, safe_click
 
 
 # Models a radio-group control element defined by the options argument
@@ -41,7 +41,7 @@ class RadioGroup(AbstractField):
         # If value is valid and selection must change, change it
         if self.getter() != value:
             radio_element = self.option_to_radio[value]
-            move_and_click(self.driver, radio_element)
+            safe_click(self.driver, radio_element)
             wait_load(self.driver)
 
     # Return name of selected radio, or None if neither are selected
