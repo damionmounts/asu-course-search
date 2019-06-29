@@ -21,17 +21,12 @@ class SplitMultiSelection(AbstractField):
         self.button = self.driver.find_element(*button_loc)
         self.dropdown = self.driver.find_elements(*dropdown_loc)
 
-        # Set valid options to blank set so items can be added
-        self.valid_options = set()
-
         # Open menu
         safe_click(self.driver, self.button)
 
-        # Get text of all entries for options set
-        for item in self.dropdown:
-            span_item = item.find_element_by_tag_name('span')
-            text = span_item.text.strip()
-            self.valid_options.add(text)
+        # Populate valid options with list item texts
+        self.valid_options = {item.find_element_by_tag_name('span')
+                                  .text.strip() for item in self.dropdown}
 
         # Close menu
         safe_click(self.driver, self.button)
@@ -41,7 +36,7 @@ class SplitMultiSelection(AbstractField):
 
         # If any selection of the selection-set is invalid, alert and return
         invalids = value - self.valid_options
-        if len(invalids) != 0:
+        if invalids:
             print('These selections are invalid:', invalids)
             print('Valid options are:', self.valid_options)
             print('Nothing will be set until the entire input is correct.')
@@ -72,24 +67,20 @@ class SplitMultiSelection(AbstractField):
 
     def getter(self) -> Set[str]:
 
-        # Start with empty string set
-        current_selection: Set[str] = set()
-
         # Open menu
         safe_click(self.driver, self.button)
 
-        # Run through all input items
-        for item in self.dropdown:
-            input_ = item.find_element_by_tag_name('input')
-            if input_.get_attribute('checked'):
-                text = item.find_element_by_tag_name('span').text.strip()
-                current_selection.add(text)
+        # Create string set of texts of selected options
+        selected = {item.find_element_by_tag_name('span').text.strip()
+                    for item in self.dropdown
+                    if item.find_element_by_tag_name('input')
+                        .get_attribute('checked')}
 
         # Close menu
         safe_click(self.driver, self.button)
 
         # Return selection
-        return current_selection
+        return selected
 
 
 # Models session dropdown

@@ -18,9 +18,16 @@ class ASUCourseSearch:
 
     def __init__(self):
 
+        # ToDo: Create debug mode that disables this
+        # Headless mode in 1080p
+        options = webdriver.ChromeOptions()
+        options.add_argument('--window-size=1920,1080')
+        options.add_argument('--headless')
+
         # Create driver, set timeout, fetch course search page
         self.driver: WebDriver = \
-            webdriver.Chrome('C:/ChromeDriver/chromedriver.exe')
+            webdriver.Chrome('C:/ChromeDriver/chromedriver.exe',
+                             chrome_options=options)
         self.driver.implicitly_wait(10)
         self.driver.get('https://webapp4.asu.edu/catalog/classlist')
 
