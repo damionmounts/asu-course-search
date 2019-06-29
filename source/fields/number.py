@@ -13,21 +13,19 @@ class Number(AbstractField):
 
         # WebElement of input box
         self.entry = self.driver.find_element_by_id('catNbr')
-        self.valid_options = 'Any Numeric Digit String Is Valid'
+        self.valid_options = "Any Numeric Digit String Or '' Is Valid"
 
     # Set the number box to value
     def setter(self, value: str) -> None:
+        if value:  # If value isn't blank, (clearing field)
+            if not is_int(value):  # If it isn't a string either
+                print('Could not set number box to [' + value + '].')
+                print(self.valid_options)
+                return
 
-        # If the value given isn't a numeric string, alert and explain
-        if not (is_int(value) or value.strip() == ''):
-            print('Could not set number box to [' + value + '].')
-            print(self.valid_options)
-            return
-
-        # If value needs to be changed, change it
-        if self.getter() != value:
-            self.entry.clear()
-            self.entry.send_keys(value)
+        # Change value
+        self.entry.clear()
+        self.entry.send_keys(value)
 
     # Return current value of the box
     def getter(self) -> str:

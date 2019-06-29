@@ -31,9 +31,8 @@ class Term(AbstractField):
             print('Valid options are: ' + str(self.valid_options))
             return
 
-        # If term needs to be changed, change it
-        if self.getter() != term:
-            self.menu.select_by_visible_text(term)
+        # Set term
+        self.menu.select_by_visible_text(term)
 
     # Return text of current selected term
     def getter(self) -> str:

@@ -16,9 +16,8 @@ class Subject(AbstractField):
     def __init__(self, driver: WebDriver):
         super().__init__(driver)
 
-        # Entry is the subject box, header is used to click-off after entry
+        # Entry is the subject box
         self.entry = self.driver.find_element_by_id('subjectEntry')
-        self.header = self.driver.find_element_by_id('class-header')
 
         # Toggle used to open advanced search to get a full list of subjects
         toggle_adv_search = self.driver \
@@ -74,11 +73,9 @@ class Subject(AbstractField):
             print('Valid options are: ' + str(self.valid_options))
             return
 
-        # If box contents need to be changed, change them
-        if self.getter() != value:
-            self.entry.clear()
-            self.entry.send_keys(value)
-            safe_click(self.driver, self.header)
+        # Clear and set field
+        self.entry.clear()
+        self.entry.send_keys(value)
 
     # Return current field value
     def getter(self) -> str:

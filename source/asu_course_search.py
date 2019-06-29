@@ -10,12 +10,10 @@ from fields.abstract import AbstractField
 from fields.radio_group import PersonOnline, OpenAll
 from fields.term import Term
 from fields.subject import Subject
-
-
-# Class to represent the entire asu-course-search program
 from search_results import SearchResults
 
 
+# Class to represent the entire asu-course-search program
 class ASUCourseSearch:
 
     def __init__(self):

@@ -7,12 +7,7 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.action_chains import ActionChains
 
 
-# Move to and then click element, prevents trying to click off-screen
-def move_and_click(driver: WebDriver, element: WebElement) -> None:
-    ActionChains(driver).move_to_element(element).click(element).perform()
-
-
-# Try to click, if failed, move to element then click
+# Try to click, if failed, move to element and then click
 def safe_click(driver: WebDriver, element: WebElement) -> None:
     try:
         element.click()
@@ -34,5 +29,3 @@ def is_int(string: str) -> bool:
         return True
     except ValueError:
         return False
-
-# ElementClickInterceptedException

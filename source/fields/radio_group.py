@@ -1,4 +1,4 @@
-from typing import Dict, Tuple, Optional, Set
+from typing import Dict, Tuple, Optional
 
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By

@@ -14,11 +14,8 @@ class Keyword(AbstractField):
 
     # Sets entry box's value
     def setter(self, value: str) -> None:
-
-        # If value has to be changed, change it
-        if self.getter() != value:
-            self.entry.clear()
-            self.entry.send_keys(value)
+        self.entry.clear()
+        self.entry.send_keys(value)
 
     # Returns current value of entry box
     def getter(self) -> str:
