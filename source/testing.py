@@ -1,20 +1,18 @@
 from typing import List
 
 from asu_course_search import ASUCourseSearch
-from search_results import Course
 
 import time
 
 start = time.time()
 s = ASUCourseSearch()
-s.set_field('Subject', 'CSE')
+s.set_field('Subject', 'PHY')
 s.set_field('OpenAll', 'all')
-s.searcher.search()
-results: List[Course] = s.searcher.get_search_results()
-s.quit()
+s.results.search()
+s.results.get_search_results()
 finish = time.time()
 
-for result in results:
-    print(str(result) + '\n')
+s.quit()
 
-print(finish - start)
+print('')
+print('Completed in ' + str(finish - start) + 's.')

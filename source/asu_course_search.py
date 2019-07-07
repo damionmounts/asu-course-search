@@ -10,7 +10,7 @@ from fields.abstract import AbstractField
 from fields.radio_group import PersonOnline, OpenAll
 from fields.term import Term
 from fields.subject import Subject
-from search_results import SearchResults
+from results import Results
 
 
 # Class to represent the entire asu-course-search program
@@ -21,8 +21,8 @@ class ASUCourseSearch:
         # ToDo: Create debug mode that disables this
         # Headless mode in 1080p
         options = webdriver.ChromeOptions()
-        options.add_argument('--window-size=1920,1080')
-        options.add_argument('--headless')
+        # options.add_argument('--window-size=1920,1080')
+        # options.add_argument('--headless')
 
         # Create driver, set timeout, fetch course search page
         self.driver: WebDriver = \
@@ -31,7 +31,6 @@ class ASUCourseSearch:
         self.driver.implicitly_wait(10)
         self.driver.get('https://webapp4.asu.edu/catalog/classlist')
 
-        # ToDo: Just make these attributes to allow simplified access
         # Maps name of control to its instance
         self.fields: Dict[str, AbstractField] = {
             'PersonOnline': PersonOnline(self.driver),
@@ -44,7 +43,7 @@ class ASUCourseSearch:
             'OpenAll': OpenAll(self.driver)
         }
 
-        self.searcher = SearchResults(self.driver)
+        self.results = Results(self.driver)
 
     # Quit program and close selenium instance
     def quit(self):
