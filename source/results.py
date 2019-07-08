@@ -1,203 +1,12 @@
 from typing import List, Tuple
 
-from bs4 import BeautifulSoup, NavigableString
+from bs4 import BeautifulSoup
 from selenium.webdriver.chrome.webdriver import WebDriver
 
 from util import safe_click, wait_load
 
 
-# Given <tr>, return course text
-def tr_course(tr):
-    td = tr.find('td', {'class': 'subjectNumberColumnValue'})
-    course_text_span = td.find('span')
-    if not course_text_span:
-        return '<SubEntry>'
-    return course_text_span.text.strip()
-
-
-# Given <tr>, return Title - Designation - Subtype
-def tr_title(tr):
-    td = tr.find('td', {'class': 'titleColumnValue'})
-
-    # Title | Designation | Sub-type
-    title = '-'
-    designation = '-'
-    subtype = '-'
-
-    # Get title from [div class-results-drawer] or [a course-details-link]
-    title_div = td.find('div', {'class': 'class-results-drawer'})
-    if title_div:
-        title = ' '.join(title_div.text.split())
-    else:
-        title_a = td.find('a', {'class': 'course-details-link'})
-        title = title_a.text.strip()
-
-    # Get designation if present
-    designation_container = td.find('span', {'class': 'lab-designation'})
-    if designation_container:
-        comptip = designation_container.find('span', {'class': 'comptip'})
-        designation = comptip.text.strip()
-
-    # Get subtype if present
-    cohort_message = td.find('div', {'id': 'cohortMessage'})
-    if cohort_message:
-        subtype = cohort_message.find(text=True, recursive=False).strip()
-
-    return title + ' | ' + designation + ' | ' + subtype
-
-
-# Given <tr>, return class number
-def tr_class_number(tr):
-    td = tr.find('td', {'class': 'classNbrColumnValue'})
-    course_number_link = td.find('a')
-    return course_number_link.text.strip()
-
-
-# Given <tr>, return list of instructors
-def tr_instructor(tr):
-    td = tr.find('td', {'class': 'instructorListColumnValue'})
-    list_span = td.find('span', recursive=False)
-    list_items = list_span.find_all('span', recursive=False)
-
-    instructors = []
-
-    # Go through all instructor spans in list
-    for index, item in enumerate(list_items):
-        instructor = item.text.strip()
-
-        # Remove commas on all but last instructor
-        if index < len(list_items) - 1:
-            instructor = instructor[:-1]
-
-        instructors.append(instructor)
-
-    return instructors
-
-
-# Given <tr>, return list of days (top-down for each session listed)
-def tr_days(tr):
-    days = []
-    td = tr.find('td', {'class': 'dayListColumnValue'})
-
-    # If there are br's, return a list where each line is an element
-    for child in td.children:
-        if type(child) == NavigableString:
-            days.append(str(child).strip())
-
-    return days
-
-
-# Given <tr>, return list of start times (top-down for each session in list)
-def tr_start(tr):
-    starts = []
-    td = tr.find('td', {'class': 'startTimeDateColumnValue'})
-
-    # If there are br's, return a list where each line is an element
-    for child in td.children:
-        if type(child) == NavigableString:
-            starts.append(str(child).strip())
-
-    # Extra entry is added because of page formatting, remove it
-    del starts[0]
-    return starts
-
-
-# Given <tr>, return list of end times (top-down for each session in list)
-def tr_end(tr):
-    ends = []
-    td = tr.find('td', {'class': 'endTimeDateColumnValue'})
-
-    # If there are br's, return a list where each line is an element
-    for child in td.children:
-        if type(child) == NavigableString:
-            ends.append(str(child).strip())
-
-    return ends
-
-
-# Given <tr>, return list of locations (top-down for each session in list)
-def tr_location(tr):
-    locations = []
-
-    td = tr.find('td', {'class': 'locationBuildingColumnValue'})
-
-    for item in td.children:
-        # Either spacing in page or potential location string
-        if type(item) == NavigableString:
-            text = str(item).strip()
-            if text:
-                locations.append(text)
-
-        # Tag, either formatting <br> or location in <span> or <a>
-        else:
-            tag_name = item.name
-            if tag_name == 'a':
-                locations.append(item.text.strip())
-
-            elif tag_name == 'span':
-
-                # Corrects for blank spans used for cohort_message formatting
-                span_text = item.text.strip()
-                if span_text:
-                    locations.append(span_text)
-
-    return locations
-
-
-# Given <tr>, return list of date ranges (top-down for each session in list)
-#   also return session name [date, date, date(C)]
-def tr_dates(tr):
-
-    dates = []
-
-    td = tr.find('td', {'class': 'startDateColumnValue'})
-    dates_link = td.find('a', {'class': 'deadlinetip'})
-    for child in dates_link:
-        if type(child) == NavigableString:
-            dates.append(str(child).strip())
-
-    # Session code is on the last string
-    # ['08/22 - 12/06', '09/30 - 09/30' , '10/18 - 10/18', '11/06 - 11/06(C)']
-    # Get session code (C) and remove it from date
-    session = dates[-1][-2]
-    dates[-1] = dates[-1][:-3]
-
-    return str(dates) + ' | ' + session
-
-
-# Given <tr>, return string of credit hours the class is worth
-#   Formats: 'X' or 'X-Y'
-def tr_units(tr):
-    td = tr.find('td', {'class': 'hoursColumnValue'})
-    return td.text.strip()
-
-
-# Given <tr>, return X of Y seats open and status OPEN/CLOSED/RESERVED
-def tr_seats_open(tr):
-    td = tr.find('td', {'class': 'availableSeatsColumnValue'})
-    seats_row = td.find('div', {'class': 'row'}, recursive=False)
-    columns = seats_row.find_all('div', {'class': 'col-xs-3'}, recursive=False)
-    open_seats = columns[0].text.strip()
-    total_seats = columns[2].text.strip()
-    icon = columns[3].find('i', {'class': 'fa'})
-    icon_classes = icon.attrs['class']
-    if 'fa-circle' in icon_classes:
-        status = 'Seats Open'
-    elif 'fa-exclamation-triangle' in icon_classes:
-        status = 'Seats Reserved'
-    elif 'fa-times' in icon_classes:
-        status = 'No Seats'
-    else:
-        status = '?'
-
-    return open_seats + ' of ' + total_seats + ' | ' + status
-
-
-# Given <tr>, return string of possible general studies codes
-def tr_general_studies(tr):
-    td = tr.find('td', {'class': 'tooltipRqDesDescrColumnValue'})
-    return td.text.strip()
-
+from source.table_row import extract_row_data
 
 class MainEntry:
 
@@ -210,7 +19,7 @@ class MainEntry:
         sessions: List[Session] = []
         units: str = ''
         seats_open: List[int] = []
-        general_studies: str
+        general_studies: str = ''
         sub_entries: List[Tuple[str, SubEntry]] = []
 
 
@@ -287,18 +96,7 @@ class Results:
     def diag_print_trs(self, tr_list):
         for tr in tr_list:
             print('---------------------------------------------------------')
-            print('Course: ' + tr_course(tr))
-            print('Title: ' + tr_title(tr))
-            print('Class#: ' + tr_class_number(tr))
-            print('Instructor: ' + str(tr_instructor(tr)))
-            print('Days: ' + str(tr_days(tr)))
-            print('Start: ' + str(tr_start(tr)))
-            print('End: ' + str(tr_end(tr)))
-            print('Location: ' + str(tr_location(tr)))
-            print('Dates: ' + tr_dates(tr))
-            print('Units: ' + tr_units(tr))
-            print('Seats Open: ' + tr_seats_open(tr))
-            print('GS: ' + tr_general_studies(tr))
+            print(extract_row_data(tr))
 
     # Returns a list of Course(s) by going through all search result pages
     def get_search_results(self):
