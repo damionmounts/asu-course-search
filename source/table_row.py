@@ -1,6 +1,6 @@
 from typing import Tuple, List, Dict
 
-from bs4 import NavigableString
+from bs4 import NavigableString, Comment
 
 
 # Input: bs4 Tag <tr>
@@ -168,14 +168,19 @@ def start(tr) -> List[str]:
     td = tr.find('td', {'class': 'startTimeDateColumnValue'})  # Data cell
 
     starts = []
+    comment = False  # Used in tracking comment that messes up formatting
 
     # For all listed items, each string goes into a list slot
     for child in td.children:
-        if type(child) == NavigableString:
+
+        # If comment found, raise flag
+        if type(child) == Comment:
+            comment = True
+
+        # If text found after comment, add to starts
+        elif type(child) == NavigableString and comment:
             starts.append(str(child).strip())
 
-    # Extra entry is added because of page formatting, remove it
-    # del starts[0]
     return starts
 
 
