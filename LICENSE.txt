@@ -1,83 +1,13 @@
-                        FREE-FROM-ME PUBLIC LICENSE
-                            Version 1, June 2019
+Copyright 2019 Damion Mounts
 
-            Copyright (C) 2019 Damion Mounts <damionotg@gmail.com>
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-                                   TL;DR
+    http://www.apache.org/licenses/LICENSE-2.0
 
-    You are allowed to do literally anything with this software with no
-restrictions being imposed by ME. I am not affiliated with ASU beyond being a
-student. I am not licensed to use any ASU trademarks or copyrights and only use
-the term 'asu' in the software title, ('asu-course-search'), to indicate that
-the nature of this software revolves around searching courses at ASU. This
-software scrapes ASU's class search website. I cannot speak for ASU in any
-capacity, but, I suggest only using it to check your own courses, or, as a
-learning tool. BE REASONABLE and know that any weird usage of their website,
-scraping or not, can lead to IP banning and potential legal actions. There is
-no warranty - if your computer somehow breaks, maybe you shouldn't have been
-throwing random code from the internet at it.
-
-                              LICENSE PURPOSE
-
-    The purpose of this software license is to state that all of the content
-which I, (Damion), have personally created - is available to the public domain
-for any usage case. However, I have not created any portion of the Arizona
-State University class search website:
-
-                (https://webapp4.asu.edu/catalog/classlist)
-
-Nor am I licensed to use any ASU trademarks / copyrights that exist. I am only
-using the phrase 'asu' in the name of this project, ('asu-course-search'), in
-order to indicate that this piece of software has to do with searching courses
-that are offered at ASU. The purpose of this license is to explain that this
-project is free for any usage case possible, but, that I cannot speak on behalf
-of ASU. The license name "FREE-FROM-ME" means that all I have provided is free
-without any limitations, but, that certain use cases of this software could be
-frowned-upon by ASU.
-
-            FREE-FROM-ME PUBLIC LICENSE TERMS AND CONDITIONS
-                FOR COPYING, DISTRIBUTION AND MODIFICATION
-
-    Copying: No limitations, ctrl-c ctrl-v to your heart's content.
-
-    Distribution: No limitations, sell it out of a trench coat if you want.
-
-    Modification: No limitations, go make an unholy abomination with it.
-
-                     LIMITATIONS TO USAGE & DISCLAIMER
-
-    I, (Damion), impose no restrictions onto you on how you are supposed to use
-this piece of software. However, I cannot make a promise that ASU will allow
-every usage case without restriction(s). This piece of software is based-upon
-web scraping and automation. Now a gray area has been entered.
-
-    I suggest this tool be used in a non-gray way. By this, I mean usage that
-mimics regular personal usage patterns of the class search website. My adviser
-had mentioned that I should check class search every so many hours in order to
-see if the class I wanted has opened up. I feel that having the software run
-every 4 hours, and only check the availability of my own desired classes is a
-great use case. The software is not placing undue strain on the server, and it
-is operating at the level of a human being.
-
-    I do not have the financial abilities to hire a butler to check the ASU
-course search website for me on a regular basis. So, I have created a digital
-counterpart. I highly suggest NOT venturing into large-scale scraping of the
-course website or attempting to sell scraped class data without ASU's
-permission to do so. Yet again, I cannot speak for ASU, and I am not affiliated
-with ASU besides being an attending student. I personally have created this
-software as a means of improving my Python skills, gaining knowledge of data
-scraping, and to later make a system that tells me when a course opens up.
-
-    I suggest you utilize this software in a non-gray way:
-        - To check your own courses as if you were using the site normally
-        - As a learning implement
-
-                                WARRANTY
-
-    THERE IS NO WARRANTY. THIS SOFTWARE IS PROVIDED "AS-IS" WITH NO PROMISES OF
-ANY OUTCOMES. I AM NOT LEGALLY OR MORALLY RESPONSIBLE TO ANY DEGREE IF THE
-SOFTWARE YOU HAVE PULLED FROM THE INTERNET HAS HARMED YOUR COMPUTER IN ANY WAY,
-SHAPE, OR FORM. ALSO, IF THE COURSE SEARCH PAGE HAS CHANGED, THUS BREAKING THE
-FUNCTIONALITY OF THIS SOFTWARE, I AM NOT RESPONSIBLE FOR YOU POTENTIALLY NOT
-BEING ALERTED OF YOUR CLASS(ES) OPENING UP. YOU ASSUME ALL RESPONSIBILITY FOR
-RUNNING FREE SOFTWARE YOU FOUND OFF OF THE INTERNET.
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
